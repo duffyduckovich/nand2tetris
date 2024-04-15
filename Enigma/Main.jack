@@ -1,0 +1,124 @@
+class Main {
+    function void main() {
+        var char key;       // the key currently pressed by the user
+        var Array swaps;
+        var boolean exit;   // end application
+        var String input;   // user input
+        var String result;  // encode/decode   
+        var Enigma enigma;      
+        var Array rotor_order;
+        var String rotor_top_index_letter;
+        
+        /*
+            The Engima takes 3 input parameters:
+            @param String rotor_top_index_letter
+            @param Array swaps
+            @param Array rotor_order
+    
+            Note: The Enigma uses symmetrical encryption. Given the same settings, you can encode / decode any message by simple running it through the machine.
+            E.g. HELLO -> MFNCZ -> HELLO
+        */
+
+        let rotor_top_index_letter = "AAA"; // Tweak me if you please, e.g. -> "GFZ" :: meaning, first rotors top index is G, second rotors top index is F etc.
+
+        let rotor_order = Array.new(3);     // Tweak me if you please, e.g. [0] = 2; [1] = 3; [2] = 1 :: sets the order of the rotors. Only values between 1 and 3 are valid.
+        let rotor_order[0] = 1;
+        let rotor_order[1] = 2;
+        let rotor_order[2] = 3;
+
+        let swaps = Array.new(26);          // Tweak me if you please, e.g. swaps[0] == H && swaps[7] == A.
+        let swaps[0] = 65;  // A            // Note: To simulate the real Enigma, you must always swap two letters with each other, you mustn't change the order of letters randomly.
+        let swaps[1] = 66;  // B
+        let swaps[2] = 67;  // C
+        let swaps[3] = 68;  // D
+        let swaps[4] = 69;  // E
+        let swaps[5] = 70;  // F
+        let swaps[6] = 71;  // G
+        let swaps[7] = 72;  // H
+        let swaps[8] = 73;  // I
+        let swaps[9] = 74;  // J
+        let swaps[10] = 75; // K
+        let swaps[11] = 76; // L
+        let swaps[12] = 77; // M
+        let swaps[13] = 78; // N
+        let swaps[14] = 79; // O
+        let swaps[15] = 80; // P
+        let swaps[16] = 81; // Q
+        let swaps[17] = 82; // R
+        let swaps[18] = 83; // S
+        let swaps[19] = 84; // T
+        let swaps[20] = 85; // U
+        let swaps[21] = 86; // V
+        let swaps[22] = 87; // W
+        let swaps[23] = 88; // X
+        let swaps[24] = 89; // Y
+        let swaps[25] = 90; // Z
+
+        let enigma = Enigma.new(rotor_top_index_letter, swaps, rotor_order);
+        
+        // Display intro text
+        do Main.printIntroText();
+
+        // User input
+        let exit = false;
+        let input = String.new(64);
+        let result = String.new(64);
+
+        while (~exit) {
+            while (key = 0) {          // no input
+                let key = Keyboard.keyPressed();
+            }
+            if (key > 64 & key < 91) { // [A-Z]
+                do Output.printChar(key);
+                let input = input.appendChar(key);
+            }
+            if (key = 140) {           // ESC
+                let exit = true;
+            }
+            if (key = 128) {           // Enter
+                // encode/decode
+                let result = enigma.run(input);   
+                // print
+                do Output.println();                    
+                do Output.printString("Result: ");
+                do Output.printString(result);
+                do Output.println();
+                do Output.println();
+                // reset
+                let result = String.new(64);            
+                let input = String.new(64);
+            }
+            // Wait for key to be released
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
+        return;
+    }
+
+    function void printIntroText() {
+        do Output.printString("Welcome to Bletchley Park!");
+        do Output.println();
+        do Output.printString("Take a look at this 3 rotor Enigma machine with plugboard");
+        do Output.println();
+        do Output.printString("and reflector, used by the German army during WWII.");
+        do Output.println();
+        do Output.println();
+        do Output.printString("For more information and to change the Enigma settings,");
+        do Output.println();
+        do Output.printString("check the Main.jack file. It's easy!");
+        do Output.println();
+        do Output.println();
+        do Output.printString("ESC - Quit    Enter - Encrypt/Decrypt    [A-Z] - Legal input");
+        do Output.println();
+        do Output.printString("(Note: At most 64 letters can be encoded at once.)");
+        do Output.println();
+        do Output.println();
+        do Output.printString("____________________________________________________________");
+        do Output.println();
+        do Output.println();
+
+        return;
+    }
+}
+    

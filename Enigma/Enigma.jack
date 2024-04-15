@@ -1,0 +1,81 @@
+class Enigma {
+    
+    field Rotor left_rotor;
+    field Rotor center_rotor;
+    field Rotor right_rotor;
+    field String reflector;
+    field Array plugboard;
+
+    constructor Enigma new(String key, Array swaps, Array order) {
+        if (~(key.length() = 3)) {
+            do Output.printString("ERROR Enigma.jack: Please provide a three letter string as the initial");
+            do Output.println();
+            do Output.printString("window setting!");
+            do Output.println();
+            do Sys.error(-1);
+        }
+
+        // Wire rotors
+        let right_rotor = Rotor.new(order[2], key.charAt(2), null, null);
+        let center_rotor = Rotor.new(order[1], key.charAt(1), right_rotor, null);
+        let left_rotor = Rotor.new(order[0], key.charAt(0), center_rotor, null);
+
+        let reflector = "YRUHQSLDPXNGOKMIEBFZCWVJAT";   // Wiring for Reflector B (Wehrmacht)
+        
+        // We need to set prevRotors here explicit
+        do center_rotor.setPrevRotor(left_rotor);
+        do right_rotor.setPrevRotor(center_rotor);
+
+        let plugboard = swaps;
+        
+        return this;
+    }
+
+    method String run(String message) {
+        var int counter;
+        var String cipher;
+        var char curr_letter;
+
+        let counter = 0;
+        let cipher = String.new(64);
+
+        while (~(counter = message.length())) {
+            let curr_letter = message.charAt(counter);
+            if (~(curr_letter = 32)) {  // We don't encrypt spaces
+                let cipher = cipher.appendChar(encrypt(curr_letter));
+            }
+            let counter = counter + 1;
+        }
+        
+        return cipher;
+    }
+  
+    // Takes a letter as input, steps rotors accordingly, and returns encrypted / decrypted output.
+    method char encrypt(char letter) {
+        var char result;
+        var char left_pass;
+        var char reflector_output;
+
+        do left_rotor.step();
+
+        // forward pass
+        let left_pass = left_rotor.encode_letter(Alphabet.getAlphabetIndex(letter), true);
+
+        // reflector
+        let reflector_output = reflector.charAt(Utils.modulo(left_pass, 26));
+
+        // backward pass
+        let result = Alphabet.getCharAt(right_rotor.encode_letter(Alphabet.getAlphabetIndex(reflector_output), false));
+
+        // swap
+        let result = plugboard[Alphabet.getAlphabetIndex(result)];
+
+        return result;
+    }
+     
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
+

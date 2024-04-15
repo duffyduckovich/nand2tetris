@@ -1,0 +1,15 @@
+class Utils {
+    function int modulo(int a, int b) {
+        var int k;
+        var int r;
+        let k = a/b;
+        let r = a-(k*b);
+
+        if (r < 0) 
+        {
+            return r + b;
+        }
+
+        return r;
+    }
+}

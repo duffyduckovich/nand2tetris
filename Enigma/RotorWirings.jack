@@ -1,0 +1,36 @@
+class RotorWirings {
+    field String forward;
+    field String backward;
+
+    // You can set different wiring settings.
+    // Found here: http://users.telenet.be/d.rijmenants/en/enigmatech.htm
+    constructor RotorWirings new(int rotor_num) {
+        if (rotor_num = 1) {
+            let forward = "EKMFLGDQVZNTOWYHXUSPAIBRCJ";
+            let backward = "UWYGADFPVZBECKMTHXSLRINQOJ";
+        }
+        if (rotor_num = 2) {
+            let forward = "AJDKSIRUXBLHWTMCQGZNPYFVOE";
+            let backward = "AJPCZWRLFBDKOTYUQGENHXMIVS";
+        }
+        if (rotor_num = 3) {
+            let forward = "BDFHJLCPRTXVZNYEIWGAKMUSQO";
+            let backward = "TAGBPCSDQEUFVNZHYIXJWLRKOM";
+        }
+
+        return this;
+    }
+
+    method String getWiring(boolean direction) {
+        if (direction) {
+            return forward;
+        }
+
+        return backward;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

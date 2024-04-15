@@ -1,0 +1,80 @@
+class Rotor {
+
+    field int notch;
+    field int offset;
+    field char window;
+    field Rotor next_rotor;
+    field Rotor prev_rotor;
+    field RotorWirings wiring;
+
+    constructor Rotor new(int rotor_number, char rotor_top_index_letter, Rotor next, Rotor prev) {
+        // Define the initial setting of the machine.        
+        if (1 = rotor_number) {
+            let notch = 17; // Q
+        }
+        if (2 = rotor_number) {
+            let notch = 5;  // E
+        }
+        if (3 = rotor_number) {
+            let notch = 22; // V
+        }
+
+        let next_rotor = next;
+        let prev_rotor = prev;
+        let window = rotor_top_index_letter;
+        let wiring = RotorWirings.new(rotor_number);
+        let offset = Alphabet.getAlphabetIndex(window);
+        
+        return this;
+    }
+
+    method void setPrevRotor(Rotor prev) {
+        let prev_rotor = prev;
+        return;
+    }
+
+    // Steps the rotor.
+    method void step() {
+        if (next_rotor) {
+            if (notch = (Alphabet.getAlphabetIndex(window) + 1)) { 
+                do next_rotor.step(); 
+            }
+        }
+
+        let offset = Utils.modulo((offset + 1), 26);
+        let window = Alphabet.getCharAt(offset);
+
+        return;
+    }
+
+    // Runs the letter through the rotors and passes it on to the next / prev rotor.
+    // After the letter reached the reflector, it will be passed through the rotors in reversed order.
+    method int encode_letter(int index, boolean forward) {
+        var int output_index;
+        var char output_letter;
+        var String wiring_table;
+
+        let wiring_table = wiring.getWiring(forward);
+        let output_letter = wiring_table.charAt(Utils.modulo(index + offset, 26));
+        let output_index = Utils.modulo((Alphabet.getAlphabetIndex(output_letter) - offset), 26);
+
+        if (next_rotor) {
+            if (forward) {
+                return next_rotor.encode_letter(output_index, forward);
+            }
+        }
+
+        if (prev_rotor) {
+            if (~(forward)) {
+                return prev_rotor.encode_letter(output_index, forward);
+            }
+        }
+
+        return output_index;
+    }
+    
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
